@@ -31,20 +31,18 @@ const F_TITLE = "'Baloo 2', cursive";
 const F_BODY  = "'Nunito', sans-serif";
 
 async function askClaude(userMessage) {
-  const res = await fetch("/api/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": import.meta.env.VITE_ANTHROPIC_KEY,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      messages: [{ role: "user", content: userMessage }],
-    }),
-  });
+const res = await fetch("/api/claude", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 1000,
+    messages: [{ role: "user", content: userMessage }],
+  }),
+});
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error?.message || `Error ${res.status}`);
@@ -66,6 +64,7 @@ export default function App() {
   const [busy, setBusy]       = useState(false);
   const [mood, setMood]       = useState("");
   const [customMood, setCustomMood] = useState("");
+  const [copied, setCopied]   = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -349,6 +348,11 @@ Write ONLY the story. No title. Simple fun language.`;
             </button>
           ))}
         </div>
+        <button
+          onClick={() => { navigator.clipboard.writeText(story); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+          style={{ fontFamily: F_BODY, background: copied ? "#e8f5e9" : "white", color: copied ? "#2e7d32" : "#cc6600", border: copied ? "2.5px solid #2e7d32" : "2.5px solid #ffd4a8", borderRadius: 50, padding: "13px 24px", fontSize: 16, fontWeight: 800, cursor: "pointer", width: "100%", marginTop: 10 }}>
+          {copied ? "✅ Copied!" : "📋 Copy Story"}
+        </button>
         <button style={btnWhite} onClick={() => { setIdea(""); setStory(""); setScreen("idea"); }}>🌟 Write a New Story</button>
       </div>
     </div>
