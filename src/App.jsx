@@ -2,11 +2,23 @@ import { useState, useRef, useEffect } from "react";
 
 const MAX_Q = 4;
 
-const EXAMPLES = [
+const ALL_EXAMPLES = [
   "A girl finds a magic key 🗝️",
   "A dragon wants to be a chef 🐉",
   "A mirror whispers at night 🪞",
   "Two friends get lost underground 🌀",
+  "A cat discovers a secret door 🐱",
+  "A boy can talk to clouds ☁️",
+  "A robot learns to dream 🤖",
+  "A tiny wizard loses her wand 🌟",
+  "A fish swims into the sky 🐟",
+  "A fox collects forgotten wishes 🦊",
+  "A haunted library comes alive 📚",
+  "Twins switch lives for a day 👯",
+  "A shoe salesman sells magic boots 👟",
+  "A pirate map leads to a candy island 🍭",
+  "A snowflake refuses to melt ❄️",
+  "A clock ticks backwards 🕰️",
 ];
 
 const MOODS = [
@@ -65,6 +77,7 @@ export default function App() {
   const [mood, setMood]       = useState("");
   const [customMood, setCustomMood] = useState("");
   const [copied, setCopied]   = useState(false);
+  const [visibleExamples, setVisibleExamples] = useState(() => ALL_EXAMPLES.slice(0, 4));
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -78,7 +91,13 @@ export default function App() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs, busy]);
 
+
   const addMsg = (role, text) => setMsgs(prev => [...prev, { role, text }]);
+
+  function refreshExamples() {
+    const shuffled = [...ALL_EXAMPLES].sort(() => Math.random() - 0.5);
+    setVisibleExamples(shuffled.slice(0, 4));
+  }
 
   async function startChat() {
     if (!idea.trim()) return;
@@ -184,7 +203,7 @@ Write ONLY the story. No title. Simple fun language.`;
         <div style={{ fontSize: 72, marginBottom: 16 }}>✨</div>
         <div style={{ fontFamily: F_TITLE, fontSize: 38, fontWeight: 800, color: "#ff6b35", marginBottom: 8 }}>StorySpark</div>
         <div style={{ fontFamily: F_BODY, fontSize: 16, color: "#999", marginBottom: 32 }}>Turn any idea into an amazing story!</div>
-        <button style={btnOrange} onClick={() => setScreen("idea")}>🚀 Let's Make a Story!</button>
+        <button style={btnOrange} onClick={() => { refreshExamples(); setScreen("idea"); }}>🚀 Let's Make a Story!</button>
       </div>
     </div>
   );
@@ -203,9 +222,9 @@ Write ONLY the story. No title. Simple fun language.`;
           style={{ width: "100%", border: "2.5px solid #ffe0c0", borderRadius: 16, padding: 16, fontSize: 16, fontFamily: F_BODY, resize: "none", outline: "none", background: "#fffaf5", lineHeight: 1.5, color: "#333" }}
         />
         <div style={{ marginTop: 12, marginBottom: 20, display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {EXAMPLES.map(ex => (
+          {visibleExamples.map(ex => (
             <span key={ex} onClick={() => setIdea(ex)}
-              style={{ background: "#fff3e8", border: "2px solid #ffd4a8", borderRadius: 50, padding: "6px 14px", fontSize: 13, fontFamily: F_BODY, fontWeight: 700, color: "#cc6600", cursor: "pointer" }}>
+              style={{ background: "#fff3e8", border: "2px solid #ffd4a8", borderRadius: 50, padding: "6px 14px", fontSize: 13, fontFamily: F_BODY, fontWeight: 700, color: "#cc6600", cursor: "pointer", transition: "opacity 0.4s" }}>
               {ex}
             </span>
           ))}
@@ -353,7 +372,7 @@ Write ONLY the story. No title. Simple fun language.`;
           style={{ fontFamily: F_BODY, background: copied ? "#e8f5e9" : "white", color: copied ? "#2e7d32" : "#cc6600", border: copied ? "2.5px solid #2e7d32" : "2.5px solid #ffd4a8", borderRadius: 50, padding: "13px 24px", fontSize: 16, fontWeight: 800, cursor: "pointer", width: "100%", marginTop: 10 }}>
           {copied ? "✅ Copied!" : "📋 Copy Story"}
         </button>
-        <button style={btnWhite} onClick={() => { setIdea(""); setStory(""); setScreen("idea"); }}>🌟 Write a New Story</button>
+        <button style={btnWhite} onClick={() => { setIdea(""); setStory(""); refreshExamples(); setScreen("idea"); }}>🌟 Write a New Story</button>
       </div>
     </div>
   );
